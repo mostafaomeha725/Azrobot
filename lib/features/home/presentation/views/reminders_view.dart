@@ -7,14 +7,33 @@ import 'package:azrobot/features/home/presentation/views/widgets/reminders_view_
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class RemindersView extends StatelessWidget {
+class RemindersView extends StatefulWidget {
   const RemindersView({super.key});
+
+  @override
+  State<RemindersView> createState() => _RemindersViewState();
+}
+
+class _RemindersViewState extends State<RemindersView> {
+String? userId;
+  
+  Future<void> _loadUserIdAndReminders() async {
+    final prefs = await SharedPreferences.getInstance();
+    userId = prefs.getString("userId");
+
+    if (userId != null) {
+      context.read<ReminderCubit>().loadReminders(userId!);
+    } else {
+      debugPrint("userId not found");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => ReminderCubit()..loadReminders(userId!),
+      create: (context) => ReminderCubit(),
       child: Scaffold(
         appBar: AppBar(
           leading: Padding(

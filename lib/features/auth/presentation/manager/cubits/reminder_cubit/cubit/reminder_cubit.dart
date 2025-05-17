@@ -14,6 +14,7 @@ part 'reminder_state.dart';class ReminderCubit extends Cubit<ReminderState> {
     required String dateTime,
     required String reminderText,
     required String repeat,
+    required String userId
   }) async {
     emit(ReminderLoading());
 

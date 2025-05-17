@@ -7,8 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddReminderSheet {
+ 
+  
+  Future<void> _loadUserIdAndReminders() async {
+     String? userId;
+    final prefs = await SharedPreferences.getInstance();
+    userId = prefs.getString("userId");
+
+  
+  }
   static void addReminderSheet(BuildContext context) {
     // ignore: no_leading_underscores_for_local_identifiers
     final TextEditingController _dateTimeController = TextEditingController();
@@ -130,18 +140,29 @@ class AddReminderSheet {
       borderRadius: BorderRadius.circular(8),
     ),
   ),
-  onPressed: () {
-    final date = _dateTimeController.text;
-    final message = _reminderTextController.text;
+  onPressed: () async {
+   final date = _dateTimeController.text;
+  final message = _reminderTextController.text;
 
-    if (date.isNotEmpty && message.isNotEmpty) {
+  if (date.isNotEmpty && message.isNotEmpty) {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString("userId");
+
+    if (userId != null) {
       context.read<ReminderCubit>().addReminder(
-            
-             reminderText: message, dateTime: date, repeat: selectedRepeat,
-            
-          );
+        reminderText: message,
+        dateTime: date,
+        repeat: selectedRepeat,
+        userId: userId,
+      );
       GoRouter.of(context).pop();
+    } else {
+      // التعامل مع حالة عدم وجود userId
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("User ID not found. Please login again.")),
+      );
     }
+  }
   },
   child: Text(
     "Set",

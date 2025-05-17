@@ -20,12 +20,14 @@ class CustomButtom extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       onPressed: onPressed,
-      child: Text(
-        text,
-        style:
-            issized
-                ? TextStyles.bold20w600.copyWith(color: Colors.white)
-                : TextStyles.bold16w500.copyWith(color: Colors.white),
+      child: FittedBox(
+        child: Text(
+          text,
+          style:
+              issized
+                  ? TextStyles.bold20w600.copyWith(color: Colors.white)
+                  : TextStyles.bold16w500.copyWith(color: Colors.white),
+        ),
       ),
     );
   }

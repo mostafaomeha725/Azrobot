@@ -7,6 +7,7 @@ import 'package:azrobot/features/on_boarding/view/widgets/line_border_painter.da
 import 'package:azrobot/features/on_boarding/view/widgets/score_point_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 class ActiveOfferHistory extends StatefulWidget {
   const ActiveOfferHistory({super.key});
@@ -110,11 +111,11 @@ class _ActiveOfferHistoryState extends State<ActiveOfferHistory> {
                                       if (purchaseState is VoucherPurchaseSuccess) {
                                         ShowSuccessSheet.showSuccessDialog(
                                           context,
-                                          "تم شراء العرض بنجاح",
-                                          buttonText: "Copy code",
+                                          "",
+                                        isvoucher: false,
                                           onPressed: () {
-                                            // تنفيذ عند نسخ الكود
-                                          },
+                                          GoRouter.of(context).pop();
+                                          }, buttonText: '', 
                                         );
                                         context.read<GetVoucherCubit>().getAllVouchers();
                                       } else if (purchaseState is VoucherPurchaseFailure) {

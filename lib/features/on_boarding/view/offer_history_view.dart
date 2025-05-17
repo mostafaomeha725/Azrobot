@@ -1,7 +1,10 @@
+import 'package:azrobot/core/api_services/api_service.dart';
 import 'package:azrobot/core/app_router/app_router.dart';
 import 'package:azrobot/core/utils/app_text_styles.dart';
+import 'package:azrobot/features/home/presentation/manager/cubits/get_user_vouchers/cubit/getuservouchers_cubit.dart';
 import 'package:azrobot/features/on_boarding/view/widgets/offer_history_view_body.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class OfferHistoryView extends StatelessWidget {
@@ -54,7 +57,12 @@ class OfferHistoryView extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: OffersHistoryViewBody(),
+      body: BlocProvider(
+        create: (context) => GetUserVoucherCubit(
+          ApiService(),
+        ),
+        child: OffersHistoryViewBody(),
+      ),
     );
   }
 }

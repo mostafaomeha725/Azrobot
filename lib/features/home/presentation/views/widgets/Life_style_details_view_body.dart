@@ -2,6 +2,7 @@ import 'package:azrobot/core/utils/app_images.dart';
 import 'package:azrobot/core/utils/app_text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LifeStyleDetailsViewBody extends StatelessWidget {
   const LifeStyleDetailsViewBody({super.key, required this.item});
@@ -30,6 +31,46 @@ class LifeStyleDetailsViewBody extends StatelessWidget {
                   ),
                 ),
               ),
+             Positioned(
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0,
+  child: Center(
+    child: GestureDetector(
+      onTap: () async {
+       final youtubeUrl = item['video'];
+
+  if (youtubeUrl == null || youtubeUrl.isEmpty) {
+    debugPrint('Video URL is empty or null');
+    return;
+  }
+
+  final uri = Uri.parse(youtubeUrl);
+
+  // حاول تفتح الرابط مباشرة في تطبيق خارجي (YouTube أو المتصفح)
+  try {
+    final launched = await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
+
+    if (!launched) {
+      debugPrint('Could not launch $youtubeUrl');
+    }
+  } catch (e) {
+    debugPrint('Error launching URL: $e');
+  }
+      },
+      child: const Icon(
+        Icons.play_circle_fill,
+        color: Colors.white,
+        size: 50,
+      ),
+    ),
+  ),
+),
+
               Positioned(
                 top: 20,
                 left: 16,
@@ -89,7 +130,7 @@ class LifeStyleDetailsViewBody extends StatelessWidget {
                   const SizedBox(height: 24),
                   Align(
                     alignment: Alignment.topRight,
-                    child: Text('Date: ${item['date'] ?? 'N/A'}',
+                    child: Text('Date: ${item['date'] ?? item['updated_at']}',
                         style:
                             TextStyles.bold12w500.copyWith(color: Colors.grey)),
                   ),
@@ -102,11 +143,11 @@ class LifeStyleDetailsViewBody extends StatelessWidget {
                         style: TextStyles.bold24w600),
                   ),
                   const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  Column(
+                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Source: ${item['source'] ?? 'Unknown source'}',
+                        item['source'] != null ? 'Source: ${item['source']}' : '',
                         style:
                             TextStyles.bold13w400.copyWith(color: Colors.grey),
                       ),
@@ -120,25 +161,25 @@ class LifeStyleDetailsViewBody extends StatelessWidget {
                         style: TextStyles.bold16w400),
                   ),
                   const SizedBox(height: 16),
-                  if (item['video_url'] != null)
-                    Column(
-                      children: [
-                        const Divider(),
-                        const Text(
-                          'Related Video:',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            // افتح رابط الفيديو
-                          },
-                          child: Text(
-                            item['video_url'],
-                            style: const TextStyle(color: Colors.blue),
-                          ),
-                        ),
-                      ],
-                    ),
+                  // if (item['video_url'] != null)
+                  //   Column(
+                  //     children: [
+                  //       const Divider(),
+                  //       const Text(
+                  //         'Related Video:',
+                  //         style: TextStyle(fontWeight: FontWeight.bold),
+                  //       ),
+                  //       InkWell(
+                  //         onTap: () {
+                  //           // افتح رابط الفيديو
+                  //         },
+                  //         child: Text(
+                  //           item['video_url'],
+                  //           style: const TextStyle(color: Colors.blue),
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
                 ],
               ),
             ),

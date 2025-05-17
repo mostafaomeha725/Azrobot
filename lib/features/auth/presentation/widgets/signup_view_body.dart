@@ -23,10 +23,6 @@ class SignUpViewBody extends StatelessWidget {
     int? selectedCityId;
     int? selectedSpecialityId;
 
-    // Example list of cities with their IDs and names
-
-    // Initialize specialties cubit
-
     return MultiBlocListener(
       listeners: [
         BlocListener<SignUpCubit, SignUpState>(
@@ -160,6 +156,7 @@ class SignUpViewBody extends StatelessWidget {
       return DropdownButtonFormField<int>(
         decoration: InputDecoration(
           border: OutlineInputBorder(
+            
             borderRadius: BorderRadius.circular(10),
           ),
           filled: true,

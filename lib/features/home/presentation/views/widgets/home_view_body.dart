@@ -1,4 +1,3 @@
-import 'package:azrobot/core/api_services/api_service.dart';
 import 'package:azrobot/core/app_router/app_router.dart';
 import 'package:azrobot/core/utils/app_images.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/reminder_cubit/cubit/reminder_cubit.dart';
@@ -12,6 +11,7 @@ import 'package:azrobot/features/home/presentation/views/widgets/upwidget_home.d
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeViewBody extends StatefulWidget {
   const HomeViewBody({super.key});
@@ -24,17 +24,40 @@ class _HomeViewBodyState extends State<HomeViewBody> {
   @override
   void initState() {
     super.initState();
-    // Trigger the cubit function when the widget initializes
-      //  context.read<ReminderCubit>().loadReminders(userId!);
+   
 
     context.read<GetContentByCategoryCubit>().getContentByCategory(5);
+    _loadUserIdAndReminders(
+
+    );
   }
+  String? userId;
+  String? point ;
+  
+ Future<void> _loadUserIdAndReminders() async {
+  final prefs = await SharedPreferences.getInstance();
+  final fetchedUserId = prefs.getString("userId");
+  final fetchedPoint = prefs.getString("point");
+
+  if (mounted) {
+    setState(() {
+      userId = fetchedUserId;
+      point = fetchedPoint;
+    });
+  }
+
+  if (fetchedUserId != null) {
+    context.read<ReminderCubit>().loadReminders(fetchedUserId);
+  } else {
+    debugPrint("userId not found");
+  }
+}
 
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
-        const SliverToBoxAdapter(child: UpwidgetHome()),
+         SliverToBoxAdapter(child: UpwidgetHome(point: point??"0",)),
         const SliverToBoxAdapter(child: CardTodayTips()),
         SliverToBoxAdapter(
           child: SizedBox(
@@ -74,39 +97,40 @@ class _HomeViewBodyState extends State<HomeViewBody> {
           ),
         ),
         const SliverToBoxAdapter(child: SizedBox(height: 12)),
-//        SliverToBoxAdapter(
-//   child: Padding(
-//     padding: const EdgeInsets.symmetric(horizontal: 32),
-//     child: BlocBuilder<ReminderCubit, ReminderState>(
-//       builder: (context, state) {
-//         if (state is ReminderLoading) {
-//           return const Center(child: CircularProgressIndicator());
-//         } else if (state is ReminderFailure) {
-//           return Center(child: Text('Error: ${state.message}'));
-//         } else if (state is ReminderSuccess) {
-//           final reminders = state.reminders.reversed.toList(); // عرض الأحدث أولاً
-//           if (reminders.isEmpty) {
-//             return const Center(child: Text('No reminders yet.'));
-//           }
+       SliverToBoxAdapter(
+  child: Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 32),
+    child: BlocBuilder<ReminderCubit, ReminderState>(
+      builder: (context, state) {
+        if (state is ReminderLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is ReminderFailure) {
+          return Center(child: Text('Error: ${state.message}'));
+        } else if (state is ReminderSuccess) {
+          final reminders = state.reminders.reversed.toList(); // عرض الأحدث أولاً
+          if (reminders.isEmpty) {
+            return const Center(child: Text('No reminders yet.'));
+          }
 
-//           // عرض أول تذكير فقط كمثال
-//           final reminder = reminders.first;
+          // عرض أول تذكير فقط كمثال
+          final reminder = reminders.first;
 
-//           return ReminderCardWidget(
-//             title: reminder.reminderText,
-//             repeat: reminder.repeat,
-//             dateTime: reminder.dateTime,
-//             index: 0,
-//           );
-//         } else {
-//           return const Center(child: Text('Unexpected state.'));
-//         }
-//       },
-//     ),
-//   ),
-// ),
+          return ReminderCardWidget(
+            title: reminder.reminderText,
+            repeat: reminder.repeat,
+            dateTime: reminder.dateTime,
+            index: 0,  userId: userId??"0",
+            ishome: false,
+          );
+        } else {
+          return const Center(child: Text('Unexpected state.'));
+        }
+      },
+    ),
+  ),
+),
 
-        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        const SliverToBoxAdapter(child: SizedBox(height: 24)),  
         SliverToBoxAdapter(
           child: AppbarTextWidget(
             text: "Promote your clinic",
@@ -160,6 +184,26 @@ class _HomeViewBodyState extends State<HomeViewBody> {
             text: 'Life Style',
             onTap: () {
               GoRouter.of(context).push(AppRouter.kLifeStyleView);
+            },
+          ),
+        ),
+          const SliverToBoxAdapter(child: SizedBox(height: 12)),
+          
+        SliverToBoxAdapter(
+          child: AppbarTextWidget(
+            text: "Games",
+            onTap: () {
+              GoRouter.of(context).push(AppRouter.kGamesView);
+            },
+          ),
+        ),
+          const SliverToBoxAdapter(child: SizedBox(height: 12)),
+        SliverToBoxAdapter(
+          child: HardCardHome(
+            image: Assets.assetshub,
+            text: 'Games',
+            onTap: () {
+              GoRouter.of(context).push(AppRouter.kGamesView);
             },
           ),
         ),

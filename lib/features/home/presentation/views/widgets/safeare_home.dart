@@ -6,19 +6,20 @@ import 'package:azrobot/features/home/presentation/views/widgets/text_card.dart'
 import 'package:flutter/material.dart';
 
 class SafeareHome extends StatefulWidget {
-  const SafeareHome({super.key, this.isPlaying = false});
+  const SafeareHome({super.key, this.isPlaying = false, required this.point});
   final bool isPlaying;
-
+final String point ;
   @override
   State<SafeareHome> createState() => _SafeareHomeState();
 }
 
 class _SafeareHomeState extends State<SafeareHome> {
-  double _points = 620;
+
   final double _maxPoints = 1000;
 
   @override
   Widget build(BuildContext context) {
+      double _points = double.parse(widget.point) ;
     final size = MediaQuery.of(context).size;
     final double horizontalPadding = size.width * 0.04; // 4% of screen width
     final double verticalSpacing = size.height * 0.02; // 2% of screen height
@@ -81,7 +82,7 @@ class _SafeareHomeState extends State<SafeareHome> {
                         ),
                         SizedBox(width: size.width * 0.02),
                         Text(
-                          "620",
+                         widget.point ,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: fontSizeLarge,
@@ -138,7 +139,7 @@ class _SafeareHomeState extends State<SafeareHome> {
                               ),
                               SizedBox(width: size.width * 0.02),
                               Text(
-                                "620",
+                                widget.point,
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: fontSizeLarge * 0.9,
@@ -185,7 +186,7 @@ class _SafeareHomeState extends State<SafeareHome> {
                             inactiveTrackColor: Colors.white,
                           ),
                           child: Slider(
-                            value: _points,
+                            value: double.parse(widget.point),
                             min: 0,
                             max: _maxPoints,
                             onChanged: (value) {

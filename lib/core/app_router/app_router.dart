@@ -1,3 +1,4 @@
+import 'package:azrobot/features/account/presentation/views/games_view.dart';
 import 'package:azrobot/features/auth/presentation/views/forget_password_view.dart';
 import 'package:azrobot/features/auth/presentation/views/login_view.dart';
 import 'package:azrobot/features/auth/presentation/views/otp_code_view.dart';
@@ -45,6 +46,7 @@ abstract class AppRouter {
   static const kMemoryGamesView = '/MemoryGamesView';
   static const kLuckyDrawSpinView = '/LuckyDrawSpinView';
   static const kSlotMachineGameView = '/SlotMachineGameView';
+  static const kGamesView = '/GamesView';
 
   static GoRouter getRouter(String initialRoute) {
     return GoRouter(
@@ -155,6 +157,10 @@ abstract class AppRouter {
         GoRoute(
           path: kSlotMachineGameView,
           builder: (context, state) => SlotMachineGameView(),
+        ),
+          GoRoute(
+          path: kGamesView,
+          builder: (context, state) => GamesView(),
         ),
       ],
     );

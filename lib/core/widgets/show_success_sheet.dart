@@ -10,6 +10,7 @@ class ShowSuccessSheet {
     String message, {
     required VoidCallback onPressed,
     required String buttonText,
+     bool isvoucher = true ,
   }) {
     showDialog(
       context: context,
@@ -54,10 +55,10 @@ class ShowSuccessSheet {
                     ),
                   ),
                   SizedBox(height: 20),
-                  Padding(
+               isvoucher?   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: CustomButtom(text: 'Login', onPressed: onPressed),
-                  ),
+                  ):SizedBox(),
                 ],
               ),
             ),
@@ -66,4 +67,8 @@ class ShowSuccessSheet {
       },
     );
   }
+
+
+
+  
 }

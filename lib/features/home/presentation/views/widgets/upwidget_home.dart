@@ -2,8 +2,8 @@ import 'package:azrobot/features/home/presentation/views/widgets/safeare_home.da
 import 'package:flutter/material.dart';
 
 class UpwidgetHome extends StatelessWidget {
-  const UpwidgetHome({super.key});
-
+  const UpwidgetHome({super.key, required this.point});
+final String point ;
   @override
   Widget build(BuildContext context) {
     // Get the size of the screen
@@ -24,7 +24,9 @@ class UpwidgetHome extends StatelessWidget {
             ),
           ),
         ),
-        SafeareHome(), // Your SafeareHome widget stays as it is
+        SafeareHome(
+          point: point,
+        ), // Your SafeareHome widget stays as it is
         // You can add more widgets here for content
       ],
     );

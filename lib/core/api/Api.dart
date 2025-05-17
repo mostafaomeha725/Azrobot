@@ -47,6 +47,7 @@ class Api {
       return Left(ServerFailure('An unexpected error occurred'));
     }
   }
+  
 
   Future<Either<Failure, Map<String, dynamic>>> post({
     required String name,

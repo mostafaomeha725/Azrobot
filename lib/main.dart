@@ -9,6 +9,7 @@ import 'package:azrobot/features/auth/presentation/manager/cubits/get_all_spe_ci
 import 'package:azrobot/features/auth/presentation/manager/cubits/profile_cubit/profile_cubit.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/reminder_cubit/cubit/reminder_cubit.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/reset_otp_cubit/reset_otp_cubit.dart';
+import 'package:azrobot/features/auth/presentation/manager/cubits/sign_in_cubit/sign_in_cubit.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/sign_up_cubit/sign_up_cubit.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/verify_otp_cubit/verify_otp_cubit.dart';
 import 'package:azrobot/features/home/presentation/manager/cubits/get_all_content/cubit/get_all_contents_cubit.dart';
@@ -21,15 +22,19 @@ import 'package:device_preview/device_preview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
     await Hive.initFlutter(); // تهيئة Hive مع Flutter
-  await Hive.openBox('myBox'); 
     Hive.registerAdapter(ReminderModelAdapter()); // سجل الأدابتور
- // await Hive.openBox<ReminderModel>('notesBox');
     await Hive.openBox<ReminderModel>('reminders'); // ✅ افتح الصندوق هنا
 
-  Bloc.observer = SimpleBlocObserve(); // Optional, for custom bloc observing
+  Bloc.observer = SimpleBlocObserve();
+      final prefs = await SharedPreferences.getInstance();
+     final password = prefs.getString('password');
+     final email = prefs.getString('email');
+     print(email);
+   // Optional, for custom bloc observing
   runApp(
     MultiBlocProvider(
       providers: [
@@ -44,7 +49,7 @@ void main() async {
         ),
         // Add more providers here if needed
         BlocProvider<ProfileCubit>(
-          create: (context) => ProfileCubit(ApiService(), SharedPreference()),
+          create: (context) => ProfileCubit(ApiService(), SharedPreference())..getProfile(),
         ),
         BlocProvider<GetallcityCubit>(
           create: (context) =>
@@ -83,8 +88,19 @@ void main() async {
               ReminderCubit()
                
         ),
+           BlocProvider<SignInCubit>(
+          create: (context) =>
+              SignInCubit(
+                ApiService(),
+                ProfileCubit(ApiService(), SharedPreference(),
+                
+                ),
+                SharedPreference()
+              )..signInUser(email:email! , password:password! ),
+               
+        ),
       ],
-      child: AzrobotApp(), // Your main app widget
+      child: AzrobotApp(), 
     ),
   );
 }

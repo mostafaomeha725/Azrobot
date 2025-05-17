@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:azrobot/core/api/Api.dart';
 import 'package:azrobot/core/api/end_ponits.dart';
 import 'package:azrobot/core/errors/exceptions.dart';
@@ -6,6 +8,7 @@ import 'package:azrobot/features/auth/data/model/sign_in_model.dart';
 import 'package:azrobot/features/auth/data/model/sign_up_model.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
   final Dio dio = Dio(); // Initialize Dio for sending requests
@@ -47,30 +50,40 @@ Future<Either<Failure, SignUpModel>> signUpUser({
     return Left(Failure('حدث خطأ في الاتصال: ${e.toString()}'));
   }
 }
-  Future<Either<Failure, SignInModel>> signInUser({
-    required String email,
-    required String password,
-  }) async {
-    final result = await Api().post(
-      name: "login",
-      body: {
-        "email": email,
-        "password": password,
-      },
-      errMessage: "Failed to login",
-    );
+ Future<Either<Failure, SignInModel>> signInUser({
+  required String email,
+  required String password,
+}) async {
+  final result = await Api().post(
+    name: "login",
+    body: {
+      "email": email,
+      "password": password,
+    },
+    errMessage: "Failed to login",
+  );
 
-    return result.fold(
-      (failure) => Left(failure),
-      (data) async {
-        final token = data['data']['token'];
-       userId  = data['data']['user']['id'].toString();
-        await SharedPreference().saveToken(token);
-      
-        return Right(SignInModel.fromJson(data));
-      },
-    );
-  }
+  return result.fold(
+    (failure) => Left(failure),
+    (data) async {
+      final token = data['data']['token'];
+      final userId = data['data']['user']['id'].toString();
+      final point = data['data']['user']['points'];
+      final email = data['data']['user']['email'];
+      print(point);
+
+      // حفظ البيانات في SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("token", token);
+      await prefs.setString("userId", userId);
+      await prefs.setString("point", point);
+      await prefs.setString("email", email);
+
+      return Right(SignInModel.fromJson(data));
+    },
+  );
+}
+
 
   Future<Either<Failure, String>> otpVerify({
     required String email,
@@ -211,6 +224,15 @@ Future<Either<Failure, SignUpModel>> signUpUser({
       
       return result;
     }     
+Future<Either<Failure, Map<String, dynamic>>> getUserVouchers(String userId) async {
+  final result = await Api().get(
+    name: 'users/$userId/vouchers',
+    errMessage: 'Failed to get user vouchers',
+    withAuth: true,
+  );
+
+  return result;
+}
 
 
 Future<Either<Failure, Map<String, dynamic>>> purchaseVoucher(int voucherId) async {
@@ -247,4 +269,3 @@ Future<Either<Failure, Map<String, dynamic>>> viewSpecificContent(int contentId)
 
 
 }
-String? userId ;

@@ -1,12 +1,36 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:azrobot/features/auth/presentation/manager/cubits/reminder_cubit/cubit/reminder_cubit.dart';
 import 'package:azrobot/features/home/presentation/views/widgets/add_reminders_card.dart';
 import 'package:azrobot/features/home/presentation/views/widgets/reminder_card_widget.dart';
 
-class RemindersViewBody extends StatelessWidget {
+class RemindersViewBody extends StatefulWidget {
   const RemindersViewBody({super.key});
+
+  @override
+  State<RemindersViewBody> createState() => _RemindersViewBodyState();
+}
+
+class _RemindersViewBodyState extends State<RemindersViewBody> {
+  String? userId;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserIdAndReminders();
+  }
+
+  Future<void> _loadUserIdAndReminders() async {
+    final prefs = await SharedPreferences.getInstance();
+    userId = prefs.getString("userId");
+
+    if (userId != null) {
+      context.read<ReminderCubit>().loadReminders(userId!);
+    } else {
+      debugPrint("userId not found");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,15 +63,15 @@ class RemindersViewBody extends StatelessWidget {
                         child: ReminderCardWidget(
                           title: reminder.reminderText,
                           repeat: reminder.repeat,
-                          dateTime: reminder.dateTime, reminderKey: index,
-                          // يمكنك إضافة زر للتعديل أو الحذف لاحقًا
+                          dateTime: reminder.dateTime,
+                          
+                          userId: userId!, index: index, // تمرير userId هنا
                         ),
                       );
                     },
                   );
-                } else {
-                  return const Center(child: Text('Unexpected state.'));
                 }
+                return const Center(child: Text('Unexpected state.'));
               },
             ),
           ),
@@ -56,7 +80,3 @@ class RemindersViewBody extends StatelessWidget {
     );
   }
 }
-
-
-
-

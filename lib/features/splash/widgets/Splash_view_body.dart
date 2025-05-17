@@ -1,5 +1,6 @@
 import 'package:azrobot/core/api_services/api_service.dart';
 import 'package:azrobot/core/app_router/app_router.dart';
+import 'package:azrobot/core/helper/shared_preferences/shared_preferences.dart';
 import 'package:azrobot/core/utils/app_images.dart';
 import 'package:azrobot/features/auth/data/model/user_model.dart';
 import 'package:flutter/material.dart';
@@ -20,13 +21,13 @@ class _SplashViewBodyState extends State<SplashViewBody> {
     _navigateToNextScreen();
   }
 
-Future<UserModel?> fetchCurrentUserFromApi() async {
-  final response = await ApiService().getProfileData();
-  return response.fold(
-    (failure) => null,
-    (data) => UserModel.fromJson(data),
-  );
-}
+// Future<UserModel?> fetchCurrentUserFromApi() async {
+//   final response = await ApiService().getProfileData();
+//   return response.fold(
+//     (failure) => null,
+//     (data) => UserModel.fromJson(data),
+//   );
+// }
 
 Future<void> _navigateToNextScreen() async {
   final prefs = await SharedPreferences.getInstance();
@@ -39,10 +40,11 @@ Future<void> _navigateToNextScreen() async {
     GoRouter.of(context).pushReplacement(AppRouter.kOnboardingView);
     return; // عشان يوقف هنا وما ينفذ الباقي
   }
+    String? token = await SharedPreference().getToken();
 
-  final user = await fetchCurrentUserFromApi();
+ 
 
-  if (user == null) {
+  if (token == null) {
     GoRouter.of(context).pushReplacement(AppRouter.kLoginView);
   } else {
     GoRouter.of(context).pushReplacement(AppRouter.kBersistentBottomNavBarView);

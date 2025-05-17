@@ -11,6 +11,7 @@ import 'package:azrobot/features/auth/presentation/widgets/hint_text_auth.dart';
 import 'package:azrobot/features/auth/presentation/widgets/login_text.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginViewBody extends StatelessWidget {
   const LoginViewBody({super.key});
@@ -51,7 +52,9 @@ class LoginViewBody extends StatelessWidget {
               const HintTextAuth(hint: "Password"),
               const SizedBox(height: 6),
               CustomTextField(
-                onSaved: (value) => password = value,
+                onSaved: (value) {password = value;
+                
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Password is required";
@@ -64,7 +67,7 @@ class LoginViewBody extends StatelessWidget {
               const ForgetPasswordText(),
               const SizedBox(height: 24),
               BlocConsumer<SignInCubit, SignInState>(
-                listener: (context, state) {
+                listener: (context, state) async {
                   if (state is SignInLoading) {
                     // Show loading dialog or indicator if needed
                     showDialog(
@@ -75,14 +78,15 @@ class LoginViewBody extends StatelessWidget {
                     );
                   }
                   if (state is SignInSuccess) {
-                    Navigator.pop(context); // Dismiss the loading dialog
-                    // Navigate to the next screen (e.g., home or dashboard)
+                       final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("password", password!);
+await Future.delayed(const Duration(milliseconds: 200));
                     GoRouter.of(context)
-                        .push(AppRouter.kBersistentBottomNavBarView);
+                        .pushReplacement(AppRouter.kBersistentBottomNavBarView);
                   } else if (state is SignInFailure) {
-  Navigator.pop(context); // Dismiss the loading dialog
 
-  // Check if the error message indicates the user needs to verify their email
+
+GoRouter.of(context).pop();
   if (state.errMessage.contains("Please verify your email first")) {
     GoRouter.of(context).go(AppRouter.kOtpCodeView,extra: email);
   } else {
@@ -104,6 +108,7 @@ class LoginViewBody extends StatelessWidget {
                               email: email!,
                               password: password!,
                             );
+                            await Future.delayed(const Duration(milliseconds: 200));
                         // ignore: use_build_context_synchronously
                         await context.read<ProfileCubit>().getProfile();
                         
